@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title>Stopwatch</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20200714/pngtree-modern-double-color-futuristic-neon-background-image_351866.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow-y: hidden;
+        }
+
+        .stopwatch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: -250px;
+            margin-left: 50px;
+        }
+
+        #timeDisplay {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            border-radius: 50px;
+            padding: 10px;
+            width: 150px;
+        }
+
+        .Start {
+            background-color: green;
+            color: white;
+            font-weight: bold;
+            border: 1px solid green;
+        }
+
+        .pause {
+            background-color: orange;
+            color: white;
+            font-weight: bold;
+            border: 1px solid orange;
+        }
+
+        .resume {
+            background-color: yellowgreen;
+            color: white;
+            font-weight: bold;
+            border: 1px solid yellowgreen;
+        }
+
+        .reset {
+            background-color: red;
+            color: white;
+            font-weight: bold;
+            border: 1px solid red;
+        }
+
+        .flag {
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+            border: 1px solid blue;
+        }
+
+        .flagged-times {
+            color: white;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stopwatch">
+        <div id="timeDisplay">00:00:00</div>
+        <div class="controls">
+            <button onclick="start()" class="Start">Start</button>
+            <button onclick="pause()" class="pause">Pause</button>
+            <button onclick="resume()" class="resume" disabled>Resume</button>
+            <button onclick="reset()" class="reset">Reset</button>
+            <button onclick="flagTime()" class="flag" disabled><i class="fa fa-flag"></i></button> <!-- Initially disabled -->
+            <!-- <button onclick="clear()">data</button> -->
+        </div>
+    </div>
+    <div class="flagged-times" id="flaggedTimes">
+        <!-- Flagged times will be displayed here -->
+    </div>
+
+    <script>
+        let timer;
+        let hours = 0;
+        let minutes = 0;
+        let seconds = 0;
+        let isPaused = false;
+        let timerStarted = false; // Added variable to track if the timer has started
+
+
+        function start() {
+            if (!timer) {
+                hours = 0;
+                minutes = 0;
+                seconds = 0;
+                isPaused = false;
+                updateClock();
+                timerStarted = true; // Update timerStarted when timer starts
+                document.querySelector('.flag').disabled = false; // Enable the flag button
+            }
+        }
+
+        function pause() {
+            clearInterval(timer);
+            isPaused = true;
+            document.querySelector(".resume").disabled = false;
+        }
+
+        function resume() {
+            if (isPaused) {
+                isPaused = false;
+                updateClock();
+            }
+        }
+
+        function reset() {
+            clearInterval(timer);
+            hours = 0;
+            minutes = 0;
+            seconds = 0;
+            isPaused = true;
+            updateTime();
+            timerStarted = false; // Reset timerStarted when timer resets
+            document.querySelector('.flag').disabled = true; // Disable the flag button
+            document.querySelector('.resume').disabled = true;
+        }
+
+        function flagTime() {
+            if (timerStarted) { // Check if the timer has started
+                const flaggedTime = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+                const flaggedTimesDiv = document.getElementById("flaggedTimes");
+                flaggedTimesDiv.innerHTML += flaggedTime + " + <br>";
+            }
+        }
+
+
+        function updateClock() {
+            setTimeout(function () {
+                if (!isPaused) {
+                    seconds++;
+                    if (seconds === 60) {
+                        seconds = 0;
+                        minutes++;
+                        if (minutes === 60) {
+                            minutes = 0;
+                            hours++;
+                        }
+                    }
+                    updateTime();
+                    updateClock();
+                }
+            }, 50);
+        }
+
+        function updateTime() {
+            const formattedTime = formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds);
+            document.getElementById("timeDisplay").innerText = formattedTime;
+            return formattedTime
+        }
+
+        function formatTime(time) {
+            return time < 10 ? "0" + time : time;
+        }
+    </script>
+</body>
+
+</html>
